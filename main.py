@@ -95,7 +95,7 @@ def renderizar():
     desenhar_poste(1.5, 0.0, 0.0)
 
     # Desenha a placa no eixo Z (azul) no lóbulo inferior (x=0.0, y=0.0, z=2.5)
-    desenhar_placa(-1.5, 0.0, 2.5)
+    desenhar_placa(-1.8, 0.0, 2.8)
     
     if mostrar_rasterizacao:
         for angulo in np.linspace(0, 2 * np.pi, 6, endpoint=False):

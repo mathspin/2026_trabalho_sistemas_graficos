@@ -81,8 +81,8 @@ def desenhar_borda_tijolos():
         
         desenhar_tijolo(x, z, angulo)
 
-def desenhar_cilindro(raio, altura, fatias=16):
-    """Desenha um cilindro 3D vertical (haste do poste)."""
+def desenhar_cilindro(raio, altura, fatias=24):
+    """Desenha um cilindro 3D vertical (haste/suporte)."""
     thetas = np.linspace(0, 2 * np.pi, fatias, endpoint=True)
     glBegin(GL_QUADS)
     for i in range(len(thetas) - 1):
@@ -92,7 +92,6 @@ def desenhar_cilindro(raio, altura, fatias=16):
         x1, z1 = raio * np.cos(t1), raio * np.sin(t1)
         x2, z2 = raio * np.cos(t2), raio * np.sin(t2)
         
-        # Normais para sombreamento suave das faces laterais (Gouraud)
         glNormal3f(np.cos(t1), 0.0, np.sin(t1))
         glVertex3f(x1, 0.0, z1)
         glVertex3f(x1, altura, z1)
@@ -100,6 +99,14 @@ def desenhar_cilindro(raio, altura, fatias=16):
         glNormal3f(np.cos(t2), 0.0, np.sin(t2))
         glVertex3f(x2, altura, z2)
         glVertex3f(x2, 0.0, z2)
+    glEnd()
+    
+    # Tampa superior do cilindro
+    glBegin(GL_TRIANGLE_FAN)
+    glNormal3f(0.0, 1.0, 0.0)
+    glVertex3f(0.0, altura, 0.0)
+    for t in thetas:
+        glVertex3f(raio * np.cos(t), altura, raio * np.sin(t))
     glEnd()
 
 def desenhar_esfera(raio, aneis=12, fatias=12):
@@ -130,7 +137,6 @@ def desenhar_poste(x, y, z, altura=2.2, raio_haste=0.06, raio_globo=0.22):
     """Desenha um poste de luz posicionado em (x, y, z) utilizando glMultMatrixf."""
     glPushMatrix()
     
-    # Translação manual do poste
     m_trans = matriz_translacao(x, y, z)
     glMultMatrixf(m_trans.T)
     
@@ -149,50 +155,58 @@ def desenhar_poste(x, y, z, altura=2.2, raio_haste=0.06, raio_globo=0.22):
     
     glPopMatrix()
 
-
-def desenhar_placa(x, y, z, altura_suporte=1.2, raio_suporte=0.18, largura_painel=0.9, altura_painel=0.5, espessura_painel=0.04):
+def desenhar_placa(x, y, z, altura_suporte=0.8, raio_suporte=0.28, largura_painel=1.0, profundidade_painel=0.6, espessura_painel=0.05):
     """
-    Desenha uma placa indicativa composta por um suporte cilíndrico
-    e um painel retangular no topo.
+    Desenha a estrutura composta por um suporte cilíndrico mais largo
+    e um painel retangular horizontal (deitado, virado para cima) no topo.
     """
     glPushMatrix()
     
-    # Translação manual para a posição da placa (x, y, z) com glMultMatrixf
+    # Translação manual para a posição da base
     m_trans = matriz_translacao(x, y, z)
     glMultMatrixf(m_trans.T)
     
-    # 1. Haste/Suporte Cilíndrico (Cinza Escuro / Metálico)
+    # 1. Suporte Cilíndrico Mais Largo
     glColor3f(0.3, 0.3, 0.32)
     desenhar_cilindro(raio_suporte, altura_suporte)
     
-    # 2. Painel Retangular no topo (Branco/Cinza Claro)
+    # 2. Painel Retangular Deitado (Face Superior Virada para Cima)
     glPushMatrix()
-    m_trans_painel = matriz_translacao(0.0, altura_suporte + (altura_painel / 2.0), 0.0)
+    m_trans_painel = matriz_translacao(0.0, altura_suporte + (espessura_painel / 2.0), 0.0)
     glMultMatrixf(m_trans_painel.T)
+
+    # Rotação no eixo Y (convertendo o ângulo em graus para radianos)
+    m_rot_painel = matriz_rotacao_y(np.radians(150))
+    glMultMatrixf(m_rot_painel.T)
     
     w = largura_painel / 2.0
-    h = altura_painel / 2.0
-    d = espessura_painel / 2.0
+    h = espessura_painel / 2.0
+    d = profundidade_painel / 2.0
     
-    glColor3f(0.9, 0.9, 0.88) # Cor da placa
+    glColor3f(0.9, 0.9, 0.88)
     
     glBegin(GL_QUADS)
-    # Frente
-    glNormal3f(0.0, 0.0, 1.0)
-    glVertex3f(-w, -h,  d); glVertex3f( w, -h,  d); glVertex3f( w,  h,  d); glVertex3f(-w,  h,  d)
-    # Trás
-    glNormal3f(0.0, 0.0, -1.0)
-    glVertex3f(-w, -h, -d); glVertex3f(-w,  h, -d); glVertex3f( w,  h, -d); glVertex3f( w, -h, -d)
-    # Topo
+    # Face Superior (Virada para cima em +Y)
     glNormal3f(0.0, 1.0, 0.0)
     glVertex3f(-w,  h, -d); glVertex3f(-w,  h,  d); glVertex3f( w,  h,  d); glVertex3f( w,  h, -d)
-    # Base
+    
+    # Face Inferior (-Y)
     glNormal3f(0.0, -1.0, 0.0)
     glVertex3f(-w, -h, -d); glVertex3f( w, -h, -d); glVertex3f( w, -h,  d); glVertex3f(-w, -h,  d)
-    # Esquerda
+    
+    # Face Frontal (+Z)
+    glNormal3f(0.0, 0.0, 1.0)
+    glVertex3f(-w, -h,  d); glVertex3f( w, -h,  d); glVertex3f( w,  h,  d); glVertex3f(-w,  h,  d)
+    
+    # Face Traseira (-Z)
+    glNormal3f(0.0, 0.0, -1.0)
+    glVertex3f(-w, -h, -d); glVertex3f(-w,  h, -d); glVertex3f( w,  h, -d); glVertex3f( w, -h, -d)
+    
+    # Face Lateral Esquerda (-X)
     glNormal3f(-1.0, 0.0, 0.0)
     glVertex3f(-w, -h, -d); glVertex3f(-w, -h,  d); glVertex3f(-w,  h,  d); glVertex3f(-w,  h, -d)
-    # Direita
+    
+    # Face Lateral Direita (+X)
     glNormal3f(1.0, 0.0, 0.0)
     glVertex3f( w, -h, -d); glVertex3f( w,  h, -d); glVertex3f( w,  h,  d); glVertex3f( w, -h,  d)
     glEnd()
