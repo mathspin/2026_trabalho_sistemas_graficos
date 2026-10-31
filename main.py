@@ -18,12 +18,18 @@ TITULO = "CG - Canteiro C3 / FURG"
 usar_perspectiva = True
 mostrar_rasterizacao = True
 
+# Rotação e Zoom
 rotacao_x = 30.0
 rotacao_y = 0.0
 distancia_cam = 13.0
 
+# Translação da Câmera (WASD)
+trans_x = 0.0
+trans_y = 0.0
+
 PASSO_ROTACAO = 5.0
 PASSO_ZOOM = 0.5
+PASSO_TRANS = 0.2  # Velocidade da translação WASD
 
 def redimensionar_janela(window, width, height):
     global LARGURA, ALTURA
@@ -33,19 +39,23 @@ def redimensionar_janela(window, width, height):
     glViewport(0, 0, width, height)
 
 def tratar_teclado(window, key, scancode, action, mods):
-    global usar_perspectiva, mostrar_rasterizacao, rotacao_x, rotacao_y, distancia_cam
+    global usar_perspectiva, mostrar_rasterizacao, rotacao_x, rotacao_y, distancia_cam, trans_x, trans_y
     
     if action == glfw.PRESS or action == glfw.REPEAT:
+        # Troca de Projeções
         if key == glfw.KEY_P:
             usar_perspectiva = True
             print("Projeção: PERSPECTIVA")
         elif key == glfw.KEY_O:
             usar_perspectiva = False
             print("Projeção: ORTOGONAL")
+            
+        # Alterna Rasterização Bresenham
         elif key == glfw.KEY_B:
             mostrar_rasterizacao = not mostrar_rasterizacao
             print(f"Bresenham: {'ATIVADO' if mostrar_rasterizacao else 'DESATIVADO'}")
             
+        # Rotação pelas Setinhas
         elif key == glfw.KEY_LEFT:
             rotacao_y -= PASSO_ROTACAO
         elif key == glfw.KEY_RIGHT:
@@ -55,10 +65,21 @@ def tratar_teclado(window, key, scancode, action, mods):
         elif key == glfw.KEY_DOWN:
             rotacao_x = max(0.0, rotacao_x - PASSO_ROTACAO)
             
+        # Zoom com + e -
         elif key in (glfw.KEY_KP_ADD, glfw.KEY_EQUAL):
             distancia_cam = max(3.0, distancia_cam - PASSO_ZOOM)
         elif key in (glfw.KEY_KP_SUBTRACT, glfw.KEY_MINUS):
             distancia_cam = min(30.0, distancia_cam + PASSO_ZOOM)
+
+        # Translação com W, A, S, D
+        elif key == glfw.KEY_W:
+            trans_y -= PASSO_TRANS  # Move visão para cima
+        elif key == glfw.KEY_S:
+            trans_y += PASSO_TRANS  # Move visão para baixo
+        elif key == glfw.KEY_A:
+            trans_x += PASSO_TRANS  # Move visão para a esquerda
+        elif key == glfw.KEY_D:
+            trans_x -= PASSO_TRANS  # Move visão para a direita
 
 def aplicar_projecao():
     glMatrixMode(GL_PROJECTION)
@@ -81,9 +102,11 @@ def renderizar():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     
-    m_cam_trans = matriz_translacao(0.0, -1.0, -distancia_cam)
+    # Aplica a translação combinada (WASD + Zoom no eixo Z) usando a matriz manual
+    m_cam_trans = matriz_translacao(trans_x, -1.0 + trans_y, -distancia_cam)
     glMultMatrixf(m_cam_trans.T)
     
+    # Aplica as rotações interativas das setinhas
     glRotatef(rotacao_x, 1.0, 0.0, 0.0)
     glRotatef(rotacao_y, 0.0, 1.0, 0.0)
     
@@ -91,10 +114,8 @@ def renderizar():
     desenhar_relva()
     desenhar_borda_tijolos()
     
-    # Desenha o poste de luz no eixo X (vermelho)
+    # Objetos 3D adicionais
     desenhar_poste(1.5, 0.0, 0.0)
-
-    # Desenha a placa no eixo Z (azul) no lóbulo inferior (x=0.0, y=0.0, z=2.5)
     desenhar_placa(-1.8, 0.0, 2.8)
     
     if mostrar_rasterizacao:
@@ -122,6 +143,7 @@ def main():
     print("--- Controles do Teclado ---")
     print("Setas (Esquerda / Direita): Gira a cena horizontalmente")
     print("Setas (Cima / Baixo): Inclina a cena verticalmente")
+    print("W / A / S / D: Translada o ponto de vista (Cima / Esquerda / Baixo / Direita)")
     print("+ / -: Zoom In / Zoom Out")
     print("P: Projeção Perspectiva | O: Projeção Ortogonal")
     print("B: Alternar Linhas de Bresenham")
