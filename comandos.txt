@@ -1,0 +1,53 @@
+========================================================================
+       INSTRUÇÕES DE CONFIGURAÇÃO E EXECUÇÃO - CANTEIRO C3 / FURG
+========================================================================
+
+1. CLONAR O REPOSITÓRIO (caso ainda não tenha os arquivos):
+------------------------------------------------------------------------
+git clone https://github.com/mathspin/2026_trabalho_sistemas_graficos.git
+cd 2026_trabalho_sistemas_graficos
+
+
+2. CRIAR O AMBIENTE VIRTUAL (venv):
+------------------------------------------------------------------------
+# No Linux / macOS:
+python3 -m venv venv
+
+# No Windows (Prompt de Comando ou PowerShell):
+python -m venv venv
+
+
+3. ATIVAR O AMBIENTE VIRTUAL:
+------------------------------------------------------------------------
+# No Linux / macOS:
+source venv/bin/activate
+
+# No Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+
+# No Windows (Prompt de Comando - CMD):
+.\venv\Scripts\activate.bat
+
+
+4. INSTALAR AS DEPENDÊNCIAS:
+------------------------------------------------------------------------
+pip install --upgrade pip
+pip install -r requirements.txt
+
+
+5. EXECUTAR A APLICAÇÃO:
+------------------------------------------------------------------------
+python main.py
+
+
+========================================================================
+                       CONTROLES DO TECLADO
+========================================================================
+- Setas (Esquerda / Direita): Gira a cena no eixo horizontal
+- Setas (Cima / Baixo): Inclina a visão verticalmente
+- W / A / S / D: Translada o ponto de vista da câmera (Cima/Esquerda/Baixo/Direita)
+- Teclas + / -: Zoom In / Zoom Out
+- Tecla P: Alterna para Projeção Perspectiva
+- Tecla O: Alterna para Projeção Ortogonal
+- Tecla B: Ativa / Desativa as linhas do algoritmo de Bresenham
+========================================================================
