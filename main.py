@@ -7,7 +7,8 @@ from matrizes import matriz_translacao, matriz_perspectiva, matriz_ortogonal
 from iluminacao import inicializar_iluminacao
 from rasterizacao import bresenham_linha_3d
 from geometria import (
-    desenhar_eixos, desenhar_relva, desenhar_borda_tijolos, raio_canteiro
+    desenhar_eixos, desenhar_relva, desenhar_borda_tijolos, 
+    desenhar_poste, raio_canteiro
 )
 
 LARGURA = 1024
@@ -89,6 +90,9 @@ def renderizar():
     desenhar_eixos()
     desenhar_relva()
     desenhar_borda_tijolos()
+    
+    # Desenha o poste de luz na posição do eixo X marcada (x=2.5, y=0.0, z=0.0)
+    desenhar_poste(2.5, 0.0, 0.0)
     
     if mostrar_rasterizacao:
         for angulo in np.linspace(0, 2 * np.pi, 6, endpoint=False):
