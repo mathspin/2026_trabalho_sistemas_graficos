@@ -1,7 +1,7 @@
 import numpy as np
 
 def matriz_translacao(tx, ty, tz):
-    """Retorna matriz de translação 4x4 em formato Column-Major."""
+    """Retorna matriz de translação 4x4."""
     return np.array([
         [1.0, 0.0, 0.0, tx],
         [0.0, 1.0, 0.0, ty],
