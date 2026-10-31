@@ -148,3 +148,55 @@ def desenhar_poste(x, y, z, altura=2.2, raio_haste=0.06, raio_globo=0.22):
     glPopMatrix()
     
     glPopMatrix()
+
+
+def desenhar_placa(x, y, z, altura_suporte=1.2, raio_suporte=0.18, largura_painel=0.9, altura_painel=0.5, espessura_painel=0.04):
+    """
+    Desenha uma placa indicativa composta por um suporte cilíndrico
+    e um painel retangular no topo.
+    """
+    glPushMatrix()
+    
+    # Translação manual para a posição da placa (x, y, z) com glMultMatrixf
+    m_trans = matriz_translacao(x, y, z)
+    glMultMatrixf(m_trans.T)
+    
+    # 1. Haste/Suporte Cilíndrico (Cinza Escuro / Metálico)
+    glColor3f(0.3, 0.3, 0.32)
+    desenhar_cilindro(raio_suporte, altura_suporte)
+    
+    # 2. Painel Retangular no topo (Branco/Cinza Claro)
+    glPushMatrix()
+    m_trans_painel = matriz_translacao(0.0, altura_suporte + (altura_painel / 2.0), 0.0)
+    glMultMatrixf(m_trans_painel.T)
+    
+    w = largura_painel / 2.0
+    h = altura_painel / 2.0
+    d = espessura_painel / 2.0
+    
+    glColor3f(0.9, 0.9, 0.88) # Cor da placa
+    
+    glBegin(GL_QUADS)
+    # Frente
+    glNormal3f(0.0, 0.0, 1.0)
+    glVertex3f(-w, -h,  d); glVertex3f( w, -h,  d); glVertex3f( w,  h,  d); glVertex3f(-w,  h,  d)
+    # Trás
+    glNormal3f(0.0, 0.0, -1.0)
+    glVertex3f(-w, -h, -d); glVertex3f(-w,  h, -d); glVertex3f( w,  h, -d); glVertex3f( w, -h, -d)
+    # Topo
+    glNormal3f(0.0, 1.0, 0.0)
+    glVertex3f(-w,  h, -d); glVertex3f(-w,  h,  d); glVertex3f( w,  h,  d); glVertex3f( w,  h, -d)
+    # Base
+    glNormal3f(0.0, -1.0, 0.0)
+    glVertex3f(-w, -h, -d); glVertex3f( w, -h, -d); glVertex3f( w, -h,  d); glVertex3f(-w, -h,  d)
+    # Esquerda
+    glNormal3f(-1.0, 0.0, 0.0)
+    glVertex3f(-w, -h, -d); glVertex3f(-w, -h,  d); glVertex3f(-w,  h,  d); glVertex3f(-w,  h, -d)
+    # Direita
+    glNormal3f(1.0, 0.0, 0.0)
+    glVertex3f( w, -h, -d); glVertex3f( w,  h, -d); glVertex3f( w,  h,  d); glVertex3f( w, -h,  d)
+    glEnd()
+    
+    glPopMatrix()
+    
+    glPopMatrix()
