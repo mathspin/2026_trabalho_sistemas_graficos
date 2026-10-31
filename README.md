@@ -1,1 +1,1 @@
-# 2026_trabalho_sistemas_gr-ficos
+# 2026_trabalho_sistemas_graficos
