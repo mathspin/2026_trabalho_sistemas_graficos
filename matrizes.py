@@ -47,3 +47,21 @@ def matriz_ortogonal(left, right, bottom, top, z_near, z_far):
         [0.0, 0.0, -2.0 / (z_far - z_near), -(z_far + z_near) / (z_far - z_near)],
         [0.0, 0.0, 0.0, 1.0]
     ], dtype=np.float32)
+
+def matriz_sombra_plana(luz, plano=(0.0, 1.0, 0.0, 0.0)):
+    """Projeta pontos sobre 'plano' a partir da luz (w=0: direcional, w=1: pontual)."""
+    luz = np.array(luz, dtype=np.float32)
+    plano = np.array(plano, dtype=np.float32)
+    d = np.dot(plano, luz)
+    return (d * np.eye(4) - np.outer(luz, plano)).astype(np.float32)
+
+def matriz_rotacao_x(angulo_rad):
+    """Retorna matriz de rotação no eixo X (4x4)."""
+    c = np.cos(angulo_rad)
+    s = np.sin(angulo_rad)
+    return np.array([
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0,  c,  -s,  0.0],
+        [0.0,  s,   c,  0.0],
+        [0.0, 0.0, 0.0, 1.0]
+    ], dtype=np.float32)

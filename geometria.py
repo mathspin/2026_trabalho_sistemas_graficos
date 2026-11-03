@@ -6,6 +6,51 @@ R0 = 3.0
 AMPLITUDE = 1.0
 NUM_PONTOS = 120
 
+modo_sombra = False
+
+def cor(r, g, b):
+    if not modo_sombra:
+        glColor3f(r, g, b)
+
+from iluminacao import POSICAO_SOL
+from matrizes import matriz_sombra_plana
+
+def desenhar_sombras():
+    global modo_sombra
+    m = matriz_sombra_plana(POSICAO_SOL)
+
+    glDisable(GL_LIGHTING)
+    glDisable(GL_CULL_FACE)          # a projeção achata e pode inverter faces
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glDepthMask(GL_FALSE)
+    glEnable(GL_POLYGON_OFFSET_FILL) # evita z-fighting com a relva (mesmo y=0)
+    glPolygonOffset(-2.0, -2.0)
+
+    # Stencil: só desenha onde há relva (valor 1) e zera depois de desenhar,
+    # assim cada pixel recebe a sombra UMA vez (sem escurecer em dobro).
+    glEnable(GL_STENCIL_TEST)
+    glStencilFunc(GL_EQUAL, 1, 0xFF)
+    glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO)
+
+    glColor4f(0.0, 0.0, 0.0, 0.45)
+
+    glPushMatrix()
+    glMultMatrixf(m.T)
+    modo_sombra = True
+    desenhar_borda_tijolos()
+    desenhar_poste(1.5, 0.0, 0.0)
+    desenhar_placa(-1.8, 0.0, 2.8)
+    modo_sombra = False
+    glPopMatrix()
+
+    glDisable(GL_STENCIL_TEST)
+    glDisable(GL_POLYGON_OFFSET_FILL)
+    glDepthMask(GL_TRUE)
+    glDisable(GL_BLEND)
+    glEnable(GL_CULL_FACE)
+    glEnable(GL_LIGHTING)
+
 def raio_canteiro(theta):
     return R0 + AMPLITUDE * np.cos(3 * theta)
 
@@ -149,7 +194,7 @@ def desenhar_poste(x, y, z, altura=2.2, raio_haste=0.06, raio_globo=0.22):
     m_trans_globo = matriz_translacao(0.0, altura + raio_globo, 0.0)
     glMultMatrixf(m_trans_globo.T)
     
-    glColor3f(1.0, 0.95, 0.6)
+    cor(1.0, 0.95, 0.6)
     desenhar_esfera(raio_globo)
     glPopMatrix()
     
@@ -183,7 +228,7 @@ def desenhar_placa(x, y, z, altura_suporte=0.8, raio_suporte=0.28, largura_paine
     h = espessura_painel / 2.0
     d = profundidade_painel / 2.0
     
-    glColor3f(0.9, 0.9, 0.88)
+    cor(0.9, 0.9, 0.88)
     
     glBegin(GL_QUADS)
     # Face Superior (Virada para cima em +Y)
@@ -214,3 +259,30 @@ def desenhar_placa(x, y, z, altura_suporte=0.8, raio_suporte=0.28, largura_paine
     glPopMatrix()
     
     glPopMatrix()
+
+def desenhar_sombras(luz_mundo):
+    global modo_sombra
+    m = matriz_sombra_plana(luz_mundo)                # <-- novo
+
+    glDisable(GL_LIGHTING)
+    glDisable(GL_CULL_FACE)
+    glDisable(GL_DEPTH_TEST)                  # <-- novo (desliga o depth)
+    glDisable(GL_BLEND)                       # <-- novo
+    # glEnable(GL_STENCIL_TEST)               # <-- comentado
+    # glStencilFunc(GL_EQUAL, 1, 0xFF)        # <-- comentado
+    # glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO)  # <-- comentado
+
+    glColor4f(1.0, 0.0, 0.0, 1.0)             # <-- vermelho opaco
+
+    glPushMatrix()
+    glMultMatrixf(m.T)
+    modo_sombra = True
+    desenhar_borda_tijolos()
+    desenhar_poste(1.5, 0.0, 0.0)
+    desenhar_placa(-1.8, 0.0, 2.8)
+    modo_sombra = False
+    glPopMatrix()
+
+    glEnable(GL_DEPTH_TEST)                   # <-- restaura
+    glEnable(GL_CULL_FACE)
+    glEnable(GL_LIGHTING)
