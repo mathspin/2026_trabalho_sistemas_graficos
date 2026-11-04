@@ -1,0 +1,25 @@
+OBJETO DISTANTE
+                    ┌─────┐
+                    │     │
+                    └─────┘
+                       │
+                       │ Raios Projetores Paralelos
+                       │ (Perpendiculares à tela)
+     OBJETO PRÓXIMO    │
+         ┌─────────┐   │
+         │         │   │
+         └─────────┘   │
+             │         │
+   PLANO DA  │         │
+    IMAGEM   │         │
+   (TELA)    │         │
+     │       ▼         ▼
+  ───┼───────*─────────*──────────────
+     │       │         │
+     │       │         │
+     │    [Imagem   [Imagem
+     │   Projetada] Projetada com o
+     │              mesmo tamanho!]
+     │
+  ───┴────────────────────────────────
+  CENTRO DE PROJEÇÃO NO INFINITO (∞)

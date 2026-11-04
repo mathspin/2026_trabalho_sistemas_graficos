@@ -1,0 +1,30 @@
+OBJETO DISTANTE
+                 (Parece Menor)
+                    ┌─────┐
+                    │     │
+                    └─────┘
+                    /     \
+                   /       \
+     OBJETO PRÓXIMO         \  Raios Projetores
+      (Parece Maior)         \  Convergentes
+         ┌─────────┐          \
+         │         │           \
+         └─────────┘            \
+             │ \                 \
+             │  \                 \
+   PLANO DA  │   \                 \
+    IMAGEM   │    \                 \
+   (TELA)    │     \                 \
+     │       ▼      ▼                 ▼
+  ───┼───────*──────*─────────────────*────────────
+     │        \    /                 /
+     │         \  /                 /
+     │          \ /                /
+     │           ▼                /
+     │       [Imagem]            /
+     │       Projetada          /
+     │                         /
+     │                        /
+     └───►    ● ◄────────────┘
+         CENTRO DE PROJEÇÃO
+         (Olho / Câmera)

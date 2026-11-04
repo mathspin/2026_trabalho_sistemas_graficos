@@ -15,42 +15,6 @@ def cor(r, g, b):
 from iluminacao import POSICAO_SOL
 from matrizes import matriz_sombra_plana
 
-def desenhar_sombras():
-    global modo_sombra
-    m = matriz_sombra_plana(POSICAO_SOL)
-
-    glDisable(GL_LIGHTING)
-    glDisable(GL_CULL_FACE)          # a projeção achata e pode inverter faces
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    glDepthMask(GL_FALSE)
-    glEnable(GL_POLYGON_OFFSET_FILL) # evita z-fighting com a relva (mesmo y=0)
-    glPolygonOffset(-2.0, -2.0)
-
-    # Stencil: só desenha onde há relva (valor 1) e zera depois de desenhar,
-    # assim cada pixel recebe a sombra UMA vez (sem escurecer em dobro).
-    glEnable(GL_STENCIL_TEST)
-    glStencilFunc(GL_EQUAL, 1, 0xFF)
-    glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO)
-
-    glColor4f(0.0, 0.0, 0.0, 0.45)
-
-    glPushMatrix()
-    glMultMatrixf(m.T)
-    modo_sombra = True
-    desenhar_borda_tijolos()
-    desenhar_poste(1.5, 0.0, 0.0)
-    desenhar_placa(-1.8, 0.0, 2.8)
-    modo_sombra = False
-    glPopMatrix()
-
-    glDisable(GL_STENCIL_TEST)
-    glDisable(GL_POLYGON_OFFSET_FILL)
-    glDepthMask(GL_TRUE)
-    glDisable(GL_BLEND)
-    glEnable(GL_CULL_FACE)
-    glEnable(GL_LIGHTING)
-
 def raio_canteiro(theta):
     return R0 + AMPLITUDE * np.cos(3 * theta)
 

@@ -62,8 +62,10 @@ def tratar_teclado(window, key, scancode, action, mods):
             rotacao_y += PASSO_ROTACAO
         elif key == glfw.KEY_UP:
             rotacao_x = min(90.0, rotacao_x + PASSO_ROTACAO)
+            # rotacao_x += PASSO_ROTACAO
         elif key == glfw.KEY_DOWN:
             rotacao_x = max(0.0, rotacao_x - PASSO_ROTACAO)
+            # rotacao_x -= PASSO_ROTACAO
         elif key in (glfw.KEY_KP_ADD, glfw.KEY_EQUAL):
             distancia_cam = max(3.0, distancia_cam - PASSO_ZOOM)
         elif key in (glfw.KEY_KP_SUBTRACT, glfw.KEY_MINUS):

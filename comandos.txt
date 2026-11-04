@@ -50,4 +50,5 @@ python main.py
 - Tecla P: Alterna para Projeção Perspectiva
 - Tecla O: Alterna para Projeção Ortogonal
 - Tecla B: Ativa / Desativa as linhas do algoritmo de Bresenham
+- Tecla H: Alternar Sombra do Sol
 ========================================================================
