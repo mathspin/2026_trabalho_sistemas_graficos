@@ -76,7 +76,7 @@ def desenhar_relva(id_textura=None):
         glDisable(GL_TEXTURE_2D)
 
 
-def desenhar_tijolo(x, z, angulo_rotacao, largura=0.25, altura=0.15, profundidade=0.4):
+def desenhar_tijolo(x, z, angulo_rotacao, largura=0.25, altura=0.15, profundidade=0.4, id_textura=None):
     glPushMatrix()
     
     m_trans = matriz_translacao(x, altura / 2.0, z)
@@ -86,24 +86,85 @@ def desenhar_tijolo(x, z, angulo_rotacao, largura=0.25, altura=0.15, profundidad
     glMultMatrixf(m_rot.T)
     
     w, h, d = largura / 2.0, altura / 2.0, profundidade / 2.0
-    cor(0.85, 0.85, 0.80)
+
+    # Se houver textura e NÃO estiver desenhando a sombra, ativa a textura
+    usar_tex = (id_textura is not None and id_textura != 0 and not modo_sombra)
+
+    if usar_tex:
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, id_textura)
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+        glColor3f(1.0, 1.0, 1.0) # Cor branca para preservar a cor da imagem
+    else:
+        glDisable(GL_TEXTURE_2D)
+        cor(0.85, 0.85, 0.80)
     
     glBegin(GL_QUADS)
+    
+    # 1. Face Superior (+Y)
     glNormal3f(0.0, 1.0, 0.0)
-    glVertex3f(-w,  h, -d); glVertex3f(-w,  h,  d); glVertex3f( w,  h,  d); glVertex3f( w,  h, -d)
+    if usar_tex: glTexCoord2f(0.0, 0.0)
+    glVertex3f(-w,  h, -d)
+    if usar_tex: glTexCoord2f(0.0, 1.0)
+    glVertex3f(-w,  h,  d)
+    if usar_tex: glTexCoord2f(1.0, 1.0)
+    glVertex3f( w,  h,  d)
+    if usar_tex: glTexCoord2f(1.0, 0.0)
+    glVertex3f( w,  h, -d)
+    
+    # 2. Face Frontal (+Z)
     glNormal3f(0.0, 0.0, 1.0)
-    glVertex3f(-w, -h,  d); glVertex3f( w, -h,  d); glVertex3f( w,  h,  d); glVertex3f(-w,  h,  d)
+    if usar_tex: glTexCoord2f(0.0, 0.0)
+    glVertex3f(-w, -h,  d)
+    if usar_tex: glTexCoord2f(1.0, 0.0)
+    glVertex3f( w, -h,  d)
+    if usar_tex: glTexCoord2f(1.0, 1.0)
+    glVertex3f( w,  h,  d)
+    if usar_tex: glTexCoord2f(0.0, 1.0)
+    glVertex3f(-w,  h,  d)
+    
+    # 3. Face Traseira (-Z)
     glNormal3f(0.0, 0.0, -1.0)
-    glVertex3f(-w, -h, -d); glVertex3f(-w,  h, -d); glVertex3f( w,  h, -d); glVertex3f( w, -h, -d)
+    if usar_tex: glTexCoord2f(1.0, 0.0)
+    glVertex3f(-w, -h, -d)
+    if usar_tex: glTexCoord2f(1.0, 1.0)
+    glVertex3f(-w,  h, -d)
+    if usar_tex: glTexCoord2f(0.0, 1.0)
+    glVertex3f( w,  h, -d)
+    if usar_tex: glTexCoord2f(0.0, 0.0)
+    glVertex3f( w, -h, -d)
+    
+    # 4. Face Lateral Esquerda (-X)
     glNormal3f(-1.0, 0.0, 0.0)
-    glVertex3f(-w, -h, -d); glVertex3f(-w, -h,  d); glVertex3f(-w,  h,  d); glVertex3f(-w,  h, -d)
+    if usar_tex: glTexCoord2f(0.0, 0.0)
+    glVertex3f(-w, -h, -d)
+    if usar_tex: glTexCoord2f(1.0, 0.0)
+    glVertex3f(-w, -h,  d)
+    if usar_tex: glTexCoord2f(1.0, 1.0)
+    glVertex3f(-w,  h,  d)
+    if usar_tex: glTexCoord2f(0.0, 1.0)
+    glVertex3f(-w,  h, -d)
+    
+    # 5. Face Lateral Direita (+X)
     glNormal3f(1.0, 0.0, 0.0)
-    glVertex3f( w, -h, -d); glVertex3f( w,  h, -d); glVertex3f( w,  h,  d); glVertex3f( w, -h,  d)
+    if usar_tex: glTexCoord2f(1.0, 0.0)
+    glVertex3f( w, -h, -d)
+    if usar_tex: glTexCoord2f(1.0, 1.0)
+    glVertex3f( w,  h, -d)
+    if usar_tex: glTexCoord2f(0.0, 1.0)
+    glVertex3f( w,  h,  d)
+    if usar_tex: glTexCoord2f(0.0, 0.0)
+    glVertex3f( w, -h,  d)
+    
     glEnd()
+
+    if usar_tex:
+        glBindTexture(GL_TEXTURE_2D, 0)
+        glDisable(GL_TEXTURE_2D)
     
     glPopMatrix()
 
-def desenhar_borda_tijolos():
+def desenhar_borda_tijolos(id_textura=None):
     thetas = np.linspace(0, 2 * np.pi, NUM_PONTOS, endpoint=False)
     for t in thetas:
         r = raio_canteiro(t)
@@ -116,7 +177,7 @@ def desenhar_borda_tijolos():
         dz = (r_prox * np.sin(t + dt)) - z
         angulo = -np.arctan2(dz, dx)
         
-        desenhar_tijolo(x, z, angulo)
+        desenhar_tijolo(x, z, angulo, id_textura=id_textura)
 
 def desenhar_cilindro(raio, altura, fatias=24):
     """Desenha um cilindro 3D vertical (haste/suporte)."""

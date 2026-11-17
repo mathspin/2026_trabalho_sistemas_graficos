@@ -128,7 +128,7 @@ def renderizar():
         if luz[1] > 0.05:
             desenhar_sombras(luz)
 
-    desenhar_borda_tijolos()
+    desenhar_borda_tijolos(id_textura_pedra)
     desenhar_poste(1.5, 0.0, 0.0)
     desenhar_placa(-1.8, 0.0, 2.8)
 
@@ -137,11 +137,12 @@ def renderizar():
             r = raio_canteiro(angulo)
             bresenham_linha_3d(0.0, 0.0, r * np.cos(angulo), r * np.sin(angulo))
 
-# No topo do main.py:
+
 id_textura_grama = 0
+id_textura_pedra = 0
 
 def main():
-    global id_textura_grama
+    global id_textura_grama, id_textura_pedra
     if not glfw.init():
         return
 
@@ -159,6 +160,7 @@ def main():
 
     # <-- 3. CARREGUE A TEXTURA AQUI (com o contexto OpenGL já ativo!)
     id_textura_grama = carregar_textura("grama_textura.jpg")
+    id_textura_pedra = carregar_textura("pedra_textura.jpg")
 
     print("\n--- Controles do Teclado ---")
     print("Setas (Esquerda / Direita): Gira a cena horizontalmente")
