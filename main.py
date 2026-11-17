@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import glfw
 from OpenGL.GL import *
+from textura import carregar_textura
 
 from matrizes import matriz_translacao, matriz_perspectiva, matriz_ortogonal,matriz_rotacao_x, matriz_rotacao_y
 from iluminacao import inicializar_iluminacao, posicionar_sol, POSICAO_SOL
@@ -118,7 +119,8 @@ def renderizar():
     glEnable(GL_STENCIL_TEST)
     glStencilFunc(GL_ALWAYS, 1, 0xFF)
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE)
-    desenhar_relva()
+    # desenhar_relva()
+    desenhar_relva(id_textura_grama)
     glDisable(GL_STENCIL_TEST)
 
     if mostrar_sombra:
@@ -135,7 +137,11 @@ def renderizar():
             r = raio_canteiro(angulo)
             bresenham_linha_3d(0.0, 0.0, r * np.cos(angulo), r * np.sin(angulo))
 
+# No topo do main.py:
+id_textura_grama = 0
+
 def main():
+    global id_textura_grama
     if not glfw.init():
         return
 
@@ -145,21 +151,25 @@ def main():
         glfw.terminate()
         return
 
-    glfw.make_context_current(window)
-    print("Stencil bits:", glGetIntegerv(GL_STENCIL_BITS))
+    glfw.make_context_current(window) # <-- 1. CRIA O CONTEXTO OPENGL
     glfw.set_window_size_callback(window, redimensionar_janela)
     glfw.set_key_callback(window, tratar_teclado)
 
-    inicializar_iluminacao()
+    inicializar_iluminacao()         # <-- 2. INICIALIZA A ILUMINAÇÃO
 
-    print("--- Controles do Teclado ---")
+    # <-- 3. CARREGUE A TEXTURA AQUI (com o contexto OpenGL já ativo!)
+    id_textura_grama = carregar_textura("grama_textura.jpg")
+
+    print("\n--- Controles do Teclado ---")
     print("Setas (Esquerda / Direita): Gira a cena horizontalmente")
     print("Setas (Cima / Baixo): Inclina a cena verticalmente")
     print("W / A / S / D: Translada o ponto de vista")
     print("+ / -: Zoom In / Zoom Out")
-    print("P: Projeção Perspectiva | O: Projeção Ortogonal")
+    print("P: Projeção Perspectiva")
+    print("O: Projeção Ortogonal")
     print("B: Alternar Linhas de Bresenham")
     print("H: Alternar Sombra do Sol")
+    print("----------------------------\n")
 
     while not glfw.window_should_close(window):
         glfw.poll_events()

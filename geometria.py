@@ -34,19 +34,47 @@ def desenhar_eixos():
     glEnd()
     glEnable(GL_LIGHTING)
 
-def desenhar_relva():
-    glColor3f(0.15, 0.60, 0.15)
+def desenhar_relva(id_textura=None):
+    if id_textura is not None and id_textura != 0:
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, id_textura)
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+        # IMPORTANTE: Cor branca para a textura aparecer com as cores reais da imagem!
+        glColor3f(1.0, 1.0, 1.0)
+    else:
+        glDisable(GL_TEXTURE_2D)
+        cor(0.15, 0.60, 0.15)
+
     thetas = np.linspace(0, 2 * np.pi, NUM_PONTOS)
+    
+    # Controla o tamanho do mosaico da grama (ajuste este valor se achar muito grande/pequeno)
+    ESCALA_UV = 0.25 
     
     glBegin(GL_TRIANGLE_FAN)
     glNormal3f(0.0, 1.0, 0.0)
+    
+    if id_textura is not None and id_textura != 0:
+        glTexCoord2f(0.5, 0.5)
     glVertex3f(0.0, 0.0, 0.0)
+    
     for t in reversed(thetas):
         r = raio_canteiro(t)
         x = r * np.cos(t)
         z = r * np.sin(t)
+        
+        if id_textura is not None and id_textura != 0:
+            # Mapeamento do plano XZ para coordenadas de textura U, V
+            u = 0.5 + (x * ESCALA_UV)
+            v = 0.5 + (z * ESCALA_UV)
+            glTexCoord2f(u, v)
+            
         glVertex3f(x, 0.0, z)
     glEnd()
+
+    if id_textura is not None and id_textura != 0:
+        glBindTexture(GL_TEXTURE_2D, 0)
+        glDisable(GL_TEXTURE_2D)
+
 
 def desenhar_tijolo(x, z, angulo_rotacao, largura=0.25, altura=0.15, profundidade=0.4):
     glPushMatrix()
