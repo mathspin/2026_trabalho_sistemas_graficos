@@ -58,7 +58,7 @@ def desenhar_tijolo(x, z, angulo_rotacao, largura=0.25, altura=0.15, profundidad
     glMultMatrixf(m_rot.T)
     
     w, h, d = largura / 2.0, altura / 2.0, profundidade / 2.0
-    glColor3f(0.85, 0.85, 0.80)
+    cor(0.85, 0.85, 0.80)
     
     glBegin(GL_QUADS)
     glNormal3f(0.0, 1.0, 0.0)
@@ -236,7 +236,7 @@ def desenhar_sombras(luz_mundo):
     # glStencilFunc(GL_EQUAL, 1, 0xFF)        # <-- comentado
     # glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO)  # <-- comentado
 
-    glColor4f(1.0, 0.0, 0.0, 1.0)             # <-- vermelho opaco
+    glColor4f(0.25, 0.25, 0.28, 0.8)             # <-- vermelho opaco
 
     glPushMatrix()
     glMultMatrixf(m.T)
